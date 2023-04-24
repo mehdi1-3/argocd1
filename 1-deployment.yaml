@@ -1,22 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
-  namespace: prod
+  name: myapp
   labels:
-    app: nginx
+    app: myapp
 spec:
+  replicas: 3
   selector:
     matchLabels:
-      app: nginx
-  replicas: 2 # tells deployment to run 2 pods matching the template
+      app: myapp
   template:
     metadata:
       labels:
-        app: nginx
+        app: myapp
     spec:
       containers:
-      - name: nginx
-        image: mehdimosbah/nginx:2
-        ports:
-        - containerPort: 80
+        - name: myapp
+          image: mehdimosbah/harbor:v106
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-svc
+spec:
+  selector:
+    app: myapp
+  ports:
+    - protocol: "TCP"
+      port: 8080 # The port that the service is running on in the cluster
+      targetPort: 8080 # The port exposed by the service
+      nodePort: 30010
+  type: NodePort # type of the service.
